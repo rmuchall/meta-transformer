@@ -2,12 +2,12 @@ import {TransformContext} from "./interfaces/TransformContext";
 import {Metadata} from "./interfaces/Metadata";
 import {ClassType} from "./interfaces/ClassType";
 
-export class MetaTransformer {
+export abstract class MetaTransformer {
     private static metadata: Record<string, Metadata> = {};
 
-    static plain2Class<V>(classType: ClassType, plainObj: Record<string, any>[]): V[]
-    static plain2Class<V>(classType: ClassType, plainObj: Record<string, any>): V
-    static plain2Class<V>(classType: ClassType, plainObj: Record<string, any> | Record<string, any>[]): V | V[] {
+    static plain2Class<T>(classType: ClassType, plainObj: Record<string, any>[]): T[]
+    static plain2Class<T>(classType: ClassType, plainObj: Record<string, any>): T
+    static plain2Class<T>(classType: ClassType, plainObj: Record<string, any> | Record<string, any>[]): T | T[] {
         const classInstance = new classType();
         const className = classInstance.constructor.name;
 
@@ -18,27 +18,17 @@ export class MetaTransformer {
         return MetaTransformer.transformObject(classType, plainObj);
     }
 
-    private static transformObject<V extends Record<string, any>>(classType: ClassType, plainObj: Record<string, any>): V {
-        const classInstance = new (classType as any)();
+    private static transformObject<T>(classType: ClassType, plainObj: Record<string, any>): T {
+        const classInstance = new classType();
         const className = classInstance.constructor.name;
 
-        /*
-        // Check for extraneous properties
-        for (const propertyKey of Object.keys(plainObj)) {
-            if (!Object.prototype.hasOwnProperty.call(classInstance, propertyKey)) {
-                throw new Error(`Extraneous property [${propertyKey}] found in plain object`);
-            }
+        // No class metadata
+        if (!MetaTransformer.metadata[className]) {
+            // All primitive types
+            return Object.assign(new classType(), plainObj) as T;
         }
-        */
 
         for (const propertyKey of Object.keys(plainObj)) {
-            // No class metadata
-            if (!MetaTransformer.metadata[className]) {
-                // Primitive type
-                classInstance[propertyKey] = plainObj[propertyKey];
-                continue;
-            }
-
             // No property metadata
             if (!MetaTransformer.metadata[className][propertyKey]) {
                 // Primitive type
@@ -56,11 +46,11 @@ export class MetaTransformer {
             }
         }
 
-        return classInstance;
+        return classInstance as T;
     }
 
-    private static transformArray<V>(classType: ClassType, plainArray: Record<string, any>[]): V[] {
-        const transformedArray: V[] = [];
+    private static transformArray<T>(classType: ClassType, plainArray: Record<string, any>[]): T[] {
+        const transformedArray: T[] = [];
         for (const plainObj of plainArray) {
             transformedArray.push(MetaTransformer.transformObject(classType, plainObj));
         }
