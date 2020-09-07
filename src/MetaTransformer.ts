@@ -4,12 +4,12 @@ import {ClassType} from "./interfaces/ClassType";
 
 export abstract class MetaTransformer {
     private static metadata: Record<string, Metadata> = {};
+    private static circularCheck: Set<Record<string, any>> = new Set<Record<string, any>>();
 
     static plain2Class<T>(classType: ClassType, plainObj: Record<string, any>[]): T[]
     static plain2Class<T>(classType: ClassType, plainObj: Record<string, any>): T
     static plain2Class<T>(classType: ClassType, plainObj: Record<string, any> | Record<string, any>[]): T | T[] {
-        const classInstance = new classType();
-        const className = classInstance.constructor.name;
+        MetaTransformer.circularCheck.clear();
 
         if (Array.isArray(plainObj)) {
             return MetaTransformer.transformArray(classType, plainObj);
@@ -21,6 +21,12 @@ export abstract class MetaTransformer {
     private static transformObject<T>(classType: ClassType, plainObj: Record<string, any>): T {
         const classInstance = new classType();
         const className = classInstance.constructor.name;
+
+        // Check for circular dependencies
+        if (MetaTransformer.circularCheck.has(plainObj)) {
+            throw new Error("Plain object has a circular dependency");
+        }
+        MetaTransformer.circularCheck.add(plainObj);
 
         // No class metadata
         if (!MetaTransformer.metadata[className]) {

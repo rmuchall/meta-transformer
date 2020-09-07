@@ -66,7 +66,7 @@ test("nested complex types", () => {
         model: number;
 
         @TransformType(WidgetDetail)
-        detail: WidgetDetail = new WidgetDetail();
+        detail: WidgetDetail;
     }
 
     const classInstance: Widget = MetaTransformer.plain2Class<Widget>(Widget, {
@@ -148,4 +148,39 @@ test("allow extraneous properties", () => {
     });
 
     expect((classInstance as any).extraneous).toEqual("allowed");
+});
+
+test("circular dependencies", () => {
+    class WidgetDetail {
+        material: string;
+        shape: string;
+
+        @TransformType(WidgetDetail)
+        circular: WidgetDetail;
+    }
+
+    class Widget {
+        name: string;
+        color: string;
+        model: number;
+
+        @TransformType(WidgetDetail)
+        detail: WidgetDetail;
+    }
+
+    const widget = Object.assign(new Widget(), {
+        name: "Doodad",
+        color: "Blue",
+        model: 1234
+    });
+    const widgetDetail = Object.assign(new WidgetDetail(), {
+        material: "Plastic",
+        shape: "Square"
+    });
+    widget.detail = widgetDetail;
+    widget.detail.circular = widgetDetail;
+
+    expect(() => {
+        MetaTransformer.plain2Class<Widget>(Widget, widget);
+    }).toThrow();
 });
