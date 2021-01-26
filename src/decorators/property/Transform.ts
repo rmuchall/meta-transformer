@@ -1,12 +1,16 @@
 import {MetaTransformer} from "../../MetaTransformer";
 import {ClassType} from "../../interfaces/ClassType";
+import {DecoratorType} from "../../enums/DecoratorType";
 
-export function TransformType(transformType: ClassType): Function {
+export function Transform(transformType: ClassType): Function {
     return function (target: Object, propertyKey: string | symbol): void {
         MetaTransformer.addMetadata({
+            // Metadata
             target: target,
-            className: target.constructor.name,
             propertyKey: propertyKey.toString(),
+            // Context
+            decoratorType: DecoratorType.Transform,
+            className: target.constructor.name,
             transformType: transformType
         });
     };
