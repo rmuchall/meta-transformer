@@ -159,6 +159,40 @@ test("exclude properties", () => {
     expect(classInstance.model).toBeUndefined();
 });
 
+test("exclude abstract class properties", () => {
+    abstract class CoreWidget {
+        test: string;
+    }
+
+    abstract class BaseWidget extends CoreWidget {
+        @Exclude()
+        id: string;
+
+        created: string;
+    }
+
+    class Widget extends BaseWidget {
+        name: string;
+        color: string;
+        model: number;
+    }
+
+    const classInstance = MetaTransformer.toClass<Widget>(Widget, {
+        id: "xxx-1234-yyy",
+        created: "01/01/00",
+        name: "Doodad",
+        color: "Blue",
+        model: 1234
+    });
+
+    expect.assertions(5);
+    expect(classInstance.id).toBeUndefined();
+    expect(classInstance.created).toEqual("01/01/00");
+    expect(classInstance.name).toEqual("Doodad");
+    expect(classInstance.color).toEqual("Blue");
+    expect(classInstance.model).toEqual(1234);
+});
+
 test("allow extraneous properties", () => {
     class Widget {
         name: string;

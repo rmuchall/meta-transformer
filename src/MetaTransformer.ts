@@ -21,7 +21,9 @@ export abstract class MetaTransformer {
 
     private static transformObject<T>(classType: ClassType, obj: Record<string, any>): T {
         const classInstance = new classType();
-        const className = classInstance.constructor.name;
+        const classTypeNames = MetaTransformer.getClassTypeNames(classInstance);
+        const metadataKeys = Object.keys(MetaTransformer.metadata);
+        const metadataIntersection = classTypeNames.filter(element => metadataKeys.includes(element));
 
         // Check for circular dependencies
         if (MetaTransformer.circularCheck.has(obj)) {
@@ -30,38 +32,48 @@ export abstract class MetaTransformer {
         MetaTransformer.circularCheck.add(obj);
 
         // No class metadata
-        if (!MetaTransformer.metadata[className]) {
+        if (metadataIntersection.length === 0) {
             // All primitive types
             return Object.assign(new classType(), obj) as T;
         }
 
+        // Named loop
+        loop1:
         for (const propertyKey of Object.keys(obj)) {
-            // No property metadata
-            if (!MetaTransformer.metadata[className][propertyKey]) {
-                // Primitive type
-                classInstance[propertyKey] = obj[propertyKey];
-                continue;
+            // Loop through any found metadata classes
+            for (const metadataClassKey of metadataIntersection) {
+                const metadataPropertyKeys = Object.keys(MetaTransformer.metadata[metadataClassKey]);
+                if (!metadataPropertyKeys.includes(propertyKey)) {
+                    // No metadata - primitive type
+                    classInstance[propertyKey] = obj[propertyKey];
+                    continue loop1;
+                } else {
+                    // Metadata found - complex type
+                    const transformContext = MetaTransformer.metadata[metadataClassKey][propertyKey];
+                    switch (transformContext.decoratorType) {
+                        case DecoratorType.Exclude:
+                            continue loop1;
+                        case DecoratorType.Transform:
+                            if (!transformContext.transformType) {
+                                throw new Error("Missing transformType from transformContext");
+                            }
+
+                            // Transform
+                            if (Array.isArray(obj[transformContext.propertyKey])) {
+                                // Array
+                                classInstance[transformContext.propertyKey] = MetaTransformer.transformArray(transformContext.transformType, obj[transformContext.propertyKey]);
+                            } else {
+                                // Nested complex type
+                                classInstance[transformContext.propertyKey] = MetaTransformer.transformObject(transformContext.transformType, obj[transformContext.propertyKey]);
+                            }
+                            break;
+                        default:
+                            throw new Error("Invalid decoratorType");
+                    }
+                }
             }
 
-            const transformContext: TransformContext = MetaTransformer.metadata[className][propertyKey];
-            if (transformContext.decoratorType === DecoratorType.Exclude) {
-                // Exclude
-                continue;
-            }
-
-            if (!transformContext.transformType) {
-                throw new Error("Missing transformType from transformContext");
-            }
-
-            // Transform
-            if (Array.isArray(obj[transformContext.propertyKey])) {
-                // Array
-                classInstance[transformContext.propertyKey] = MetaTransformer.transformArray(transformContext.transformType, obj[transformContext.propertyKey]);
-            } else {
-                // Nested complex type
-                classInstance[transformContext.propertyKey] = MetaTransformer.transformObject(transformContext.transformType, obj[transformContext.propertyKey]);
-            }
-        }
+        } // End loop1
 
         return classInstance as T;
     }
@@ -89,5 +101,20 @@ export abstract class MetaTransformer {
 
     static clearMetadata(): void {
         MetaTransformer.metadata = {};
+    }
+
+    static getClassTypeNames(classInstance: Record<string, any>): string[] {
+        const classTypeNames: string[] = [];
+        classTypeNames.push(classInstance.constructor.name);
+
+        let proto: any = classInstance.__proto__.constructor;
+        do {
+            proto = proto.__proto__;
+            if (proto.name !== "") {
+                classTypeNames.push(proto.name);
+            }
+        } while (proto.name !== "")
+
+        return classTypeNames;
     }
 }
