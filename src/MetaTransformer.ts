@@ -37,43 +37,40 @@ export abstract class MetaTransformer {
             return Object.assign(new classType(), obj) as T;
         }
 
-        // Named loop
-        loop1:
         for (const propertyKey of Object.keys(obj)) {
-            // Loop through any found metadata classes
-            for (const metadataClassKey of metadataIntersection) {
-                const metadataPropertyKeys = Object.keys(MetaTransformer.metadata[metadataClassKey]);
-                if (!metadataPropertyKeys.includes(propertyKey)) {
-                    // No metadata - primitive type
-                    classInstance[propertyKey] = obj[propertyKey];
-                    continue loop1;
-                } else {
-                    // Metadata found - complex type
-                    const transformContext = MetaTransformer.metadata[metadataClassKey][propertyKey];
-                    switch (transformContext.decoratorType) {
-                        case DecoratorType.Exclude:
-                            continue loop1;
-                        case DecoratorType.Transform:
-                            if (!transformContext.transformType) {
-                                throw new Error("Missing transformType from transformContext");
-                            }
-
-                            // Transform
-                            if (Array.isArray(obj[transformContext.propertyKey])) {
-                                // Array
-                                classInstance[transformContext.propertyKey] = MetaTransformer.transformArray(transformContext.transformType, obj[transformContext.propertyKey]);
-                            } else {
-                                // Nested complex type
-                                classInstance[transformContext.propertyKey] = MetaTransformer.transformObject(transformContext.transformType, obj[transformContext.propertyKey]);
-                            }
-                            break;
-                        default:
-                            throw new Error("Invalid decoratorType");
-                    }
-                }
+            // search for transform context
+            const foundMetadataKeys = metadataIntersection.filter(value => Object.prototype.hasOwnProperty.call(MetaTransformer.metadata[value], propertyKey));
+            if (foundMetadataKeys.length > 1) {
+                throw new Error("Multiple conflicting transformer contexts found");
             }
 
-        } // End loop1
+            if (foundMetadataKeys.length === 1) {
+                const transformContext = MetaTransformer.metadata[foundMetadataKeys[0]][propertyKey];
+                switch (transformContext.decoratorType) {
+                    case DecoratorType.Exclude:
+                        continue;
+                    case DecoratorType.Transform:
+                        if (!transformContext.transformType) {
+                            throw new Error("Missing transformType from transformContext");
+                        }
+
+                        // Transform
+                        if (Array.isArray(obj[transformContext.propertyKey])) {
+                            // Array
+                            classInstance[transformContext.propertyKey] = MetaTransformer.transformArray(transformContext.transformType, obj[transformContext.propertyKey]);
+                        } else {
+                            // Nested complex type
+                            classInstance[transformContext.propertyKey] = MetaTransformer.transformObject(transformContext.transformType, obj[transformContext.propertyKey]);
+                        }
+                        break;
+                    default:
+                        throw new Error("Invalid decoratorType");
+                }
+            } else {
+                // No metadata - primitive type
+                classInstance[propertyKey] = obj[propertyKey];
+            }
+        }
 
         return classInstance as T;
     }
