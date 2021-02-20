@@ -2,8 +2,8 @@ import {MetaTransformer} from "../../MetaTransformer";
 import {ClassType} from "../../interfaces/ClassType";
 import {DecoratorType} from "../../enums/DecoratorType";
 
-export function Transform(transformType: ClassType): Function {
-    return function (target: Object, propertyKey: string | symbol): void {
+export function Transform(transformType: ClassType): PropertyDecorator {
+    return (target, propertyKey) => {
         MetaTransformer.addMetadata({
             // Metadata
             target: target,

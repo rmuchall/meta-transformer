@@ -110,7 +110,7 @@ export abstract class MetaTransformer {
             if (proto.name !== "") {
                 classTypeNames.push(proto.name);
             }
-        } while (proto.name !== "")
+        } while (proto.name !== "");
 
         return classTypeNames;
     }

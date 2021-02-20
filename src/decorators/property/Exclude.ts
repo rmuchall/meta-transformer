@@ -1,8 +1,8 @@
 import {MetaTransformer} from "../../MetaTransformer";
 import {DecoratorType} from "../../enums/DecoratorType";
 
-export function Exclude(): Function {
-    return function (target: Object, propertyKey: string | symbol): void {
+export function Exclude(): PropertyDecorator {
+    return (target, propertyKey) => {
         MetaTransformer.addMetadata({
             // Metadata
             target: target,
