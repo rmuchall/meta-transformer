@@ -104,7 +104,7 @@ export abstract class MetaTransformer {
         const classTypeNames: string[] = [];
         classTypeNames.push(classInstance.constructor.name);
 
-        let proto: any = classInstance.__proto__.constructor;
+        let proto: any = classInstance["__proto__"].constructor;
         do {
             proto = proto.__proto__;
             if (proto.name !== "") {
