@@ -57,5 +57,7 @@ test("multiple transform contexts", () => {
             @Transform(WidgetDetail)
             detail: WidgetDetail;
         }
-    }).toThrow();
+
+        new Widget();
+    }).toThrow("Conflicting transform contexts");
 });

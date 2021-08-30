@@ -92,7 +92,7 @@ export abstract class MetaTransformer {
         if (!MetaTransformer.metadata[context.className][context.propertyKey]) {
             MetaTransformer.metadata[context.className][context.propertyKey] = context;
         } else {
-            throw new Error("Multiple transform contexts");
+            throw new Error("Conflicting transform contexts");
         }
     }
 
