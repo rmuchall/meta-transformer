@@ -59,10 +59,13 @@ export abstract class MetaTransformer {
                             // Property is defined and null
                             if (obj[transformContext.propertyKey] === null) {
                                 classInstance[propertyKey] = null;
+                                continue;
                             }
 
                             // Property is undefined
-                            continue;
+                            if (obj[transformContext.propertyKey] === undefined) {
+                                continue;
+                            }
                         }
 
                         // Transform

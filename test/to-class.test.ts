@@ -72,6 +72,9 @@ test("nested complex types", () => {
         detail: WidgetDetail;
 
         @Transform(WidgetDetail, {isNullable: true})
+        nullDetailWithValue?: WidgetDetail;
+
+        @Transform(WidgetDetail, {isNullable: true})
         nullDetail?: WidgetDetail;
 
         @Transform(WidgetDetail, {isNullable: true})
@@ -86,10 +89,14 @@ test("nested complex types", () => {
             material: "Plastic",
             shape: "Square"
         },
+        nullDetailWithValue: {
+            material: "Plastic",
+            shape: "Square"
+        },
         nullDetail: null
     });
 
-    expect.assertions(9);
+    expect.assertions(12);
     expect(classInstance).toBeInstanceOf(Widget);
     expect(classInstance.name).toEqual("Doodad");
     expect(classInstance.color).toEqual("Blue");
@@ -97,6 +104,9 @@ test("nested complex types", () => {
     expect(classInstance.detail).toBeInstanceOf(WidgetDetail);
     expect(classInstance.detail.material).toEqual("Plastic");
     expect(classInstance.detail.shape).toEqual("Square");
+    expect(classInstance.nullDetailWithValue).toBeInstanceOf(WidgetDetail);
+    expect(classInstance.nullDetailWithValue!.material).toEqual("Plastic");
+    expect(classInstance.nullDetailWithValue!.shape).toEqual("Square");
     expect(classInstance.nullDetail).toBeNull();
     expect(classInstance.undefinedDetail).toBeUndefined();
 });
