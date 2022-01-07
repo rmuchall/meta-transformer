@@ -1,6 +1,6 @@
 {
   "name": "meta-transformer",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "meta-transformer",
   "main": "./cjs/index.js",
   "module": "./esm/index.js",
