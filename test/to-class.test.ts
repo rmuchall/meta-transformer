@@ -6,20 +6,21 @@ beforeEach(MetaTransformer.clearMetadata);
 test("primitive types", () => {
     class Widget {
         name: string;
-        color: string;
         model: number;
+        created: Date;
     }
 
     const classInstance: Widget = MetaTransformer.toClass<Widget>(Widget, {
         name: "Doodad",
-        color: "Blue",
-        model: 1234
+        model: 1234,
+        created: new Date()
     });
 
-    expect.assertions(4);
+    expect.assertions(5);
     expect(classInstance.name).toEqual("Doodad");
-    expect(classInstance.color).toEqual("Blue");
     expect(classInstance.model).toEqual(1234);
+    expect(classInstance.created).toBeInstanceOf(Date);
+    expect(isNaN(classInstance.created.valueOf())).toBeFalsy();
     expect(classInstance).toBeInstanceOf(Widget);
 });
 
@@ -69,6 +70,12 @@ test("nested complex types", () => {
 
         @Transform(WidgetDetail)
         detail: WidgetDetail;
+
+        @Transform(WidgetDetail, {isNullable: true})
+        nullDetail?: WidgetDetail;
+
+        @Transform(WidgetDetail, {isNullable: true})
+        undefinedDetail?: WidgetDetail;
     }
 
     const classInstance: Widget = MetaTransformer.toClass<Widget>(Widget, {
@@ -78,10 +85,11 @@ test("nested complex types", () => {
         detail: {
             material: "Plastic",
             shape: "Square"
-        }
+        },
+        nullDetail: null
     });
 
-    expect.assertions(7);
+    expect.assertions(9);
     expect(classInstance).toBeInstanceOf(Widget);
     expect(classInstance.name).toEqual("Doodad");
     expect(classInstance.color).toEqual("Blue");
@@ -89,6 +97,8 @@ test("nested complex types", () => {
     expect(classInstance.detail).toBeInstanceOf(WidgetDetail);
     expect(classInstance.detail.material).toEqual("Plastic");
     expect(classInstance.detail.shape).toEqual("Square");
+    expect(classInstance.nullDetail).toBeNull();
+    expect(classInstance.undefinedDetail).toBeUndefined();
 });
 
 test("nested arrays", () => {

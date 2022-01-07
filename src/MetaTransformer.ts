@@ -54,6 +54,17 @@ export abstract class MetaTransformer {
                             throw new Error("Missing transformType from transformContext");
                         }
 
+                        // Skip if isNullable and property is undefined or null
+                        if (transformContext.isNullable) {
+                            // Property is defined and null
+                            if (obj[transformContext.propertyKey] === null) {
+                                classInstance[propertyKey] = null;
+                            }
+
+                            // Property is undefined
+                            continue;
+                        }
+
                         // Transform
                         if (Array.isArray(obj[transformContext.propertyKey])) {
                             // Array

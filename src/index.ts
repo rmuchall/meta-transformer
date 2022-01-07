@@ -9,3 +9,4 @@ export * from "./enums/DecoratorType";
 export * from "./interfaces/ClassType";
 export * from "./interfaces/Metadata";
 export * from "./interfaces/TransformContext";
+export * from "./interfaces/TransformOptions";

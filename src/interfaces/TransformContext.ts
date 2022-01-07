@@ -8,5 +8,6 @@ export interface TransformContext {
     // Context
     decoratorType: DecoratorType;
     className: string;
-    transformType?: ClassType
+    transformType?: ClassType;
+    isNullable?: boolean;
 }
