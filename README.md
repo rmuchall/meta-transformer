@@ -89,4 +89,4 @@ const classInstance = MetaTransformer.toClass<Widget>(Widget, {
 ```
 
 ## Circular Dependencies
-meta-transformer will throw an error if you try to transform circular dependencies.<br/>
+meta-transformer will throw an error if you try to transform objects that have circular dependencies.<br/>
