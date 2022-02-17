@@ -69,7 +69,7 @@ const classInstance: Widget = MetaTransformer.toClass<Widget>(Widget, {
 ```
 
 ## Exclude Properties
-You can use the `@Exclude()` decorator to mark properties that should not be included in the transformed class instance.<br/>
+You can use the `@Exclude()` decorator to exclude properties from transformation.<br/>
 ```
 class Widget {
     name: string;
