@@ -1,10 +1,11 @@
-import {Exclude} from "../src/decorators/property/Exclude";
-import {MetaTransformer} from "../src/MetaTransformer";
-import {Transform} from "../src/decorators/property/Transform";
+import {test, beforeEach} from "tap";
+import {Exclude} from "../src/decorators/property/Exclude.js";
+import {MetaTransformer} from "../src/MetaTransformer.js";
+import {Transform} from "../src/decorators/property/Transform.js";
 
 beforeEach(MetaTransformer.clearMetadata);
 
-test("exclude properties", () => {
+void test("exclude properties", t => {
     class Widget {
         name: string;
         color: string;
@@ -19,13 +20,13 @@ test("exclude properties", () => {
         model: 1234
     });
 
-    expect.assertions(3);
-    expect(classInstance.name).toEqual("Doodad");
-    expect(classInstance.color).toEqual("Blue");
-    expect(classInstance.model).toBeUndefined();
+    t.equal(classInstance.name, "Doodad");
+    t.equal(classInstance.color, "Blue");
+    t.equal(classInstance.model, undefined);
+    t.end();
 });
 
-test("exclude abstract properties", () => {
+void test("exclude abstract properties", t => {
     abstract class CoreWidget {
         test: string;
     }
@@ -51,15 +52,15 @@ test("exclude abstract properties", () => {
         model: 1234
     });
 
-    expect.assertions(5);
-    expect(classInstance.id).toBeUndefined();
-    expect(classInstance.created).toEqual("01/01/00");
-    expect(classInstance.name).toEqual("Doodad");
-    expect(classInstance.color).toEqual("Blue");
-    expect(classInstance.model).toEqual(1234);
+    t.equal(classInstance.id, undefined);
+    t.equal(classInstance.created, "01/01/00");
+    t.equal(classInstance.name, "Doodad");
+    t.equal(classInstance.color, "Blue");
+    t.equal(classInstance.model, 1234);
+    t.end();
 });
 
-test("exclude arrays", () => {
+void test("exclude arrays", t => {
     class WidgetDetail {
         @Exclude()
         material: string;
@@ -98,27 +99,27 @@ test("exclude arrays", () => {
         ]
     );
 
-    expect.assertions(14);
-    expect(classArray[0]).toBeInstanceOf(Widget);
-    expect(classArray[0].name).toEqual("Doodad");
-    expect(classArray[0].color).toEqual("Blue");
-    expect(classArray[0].model).toEqual(1234);
+    t.type(classArray[0], Widget);
+    t.equal(classArray[0].name, "Doodad");
+    t.equal(classArray[0].color, "Blue");
+    t.equal(classArray[0].model, 1234);
 
-    expect(classArray[0].detail).toBeInstanceOf(WidgetDetail);
-    expect(classArray[0].detail.material).toBeUndefined();
-    expect(classArray[0].detail.shape).toEqual("Square");
+    t.type(classArray[0].detail, WidgetDetail);
+    t.equal(classArray[0].detail.material, undefined);
+    t.equal(classArray[0].detail.shape, "Square");
 
-    expect(classArray[1]).toBeInstanceOf(Widget);
-    expect(classArray[1].name).toEqual("Thing");
-    expect(classArray[1].color).toEqual("Red");
-    expect(classArray[1].model).toEqual(9876);
+    t.type(classArray[1], Widget);
+    t.equal(classArray[1].name, "Thing");
+    t.equal(classArray[1].color, "Red");
+    t.equal(classArray[1].model, 9876);
 
-    expect(classArray[1].detail).toBeInstanceOf(WidgetDetail);
-    expect(classArray[1].detail.material).toBeUndefined();
-    expect(classArray[1].detail.shape).toEqual("Circle");
+    t.type(classArray[1].detail, WidgetDetail);
+    t.equal(classArray[1].detail.material, undefined);
+    t.equal(classArray[1].detail.shape, "Circle");
+    t.end();
 });
 
-test("exclude nested arrays", () => {
+void test("exclude nested arrays", t => {
     class WidgetDetail {
         @Exclude()
         material: string;
@@ -151,22 +152,22 @@ test("exclude nested arrays", () => {
         ]
     });
 
-    expect.assertions(10);
-    expect(classInstance).toBeInstanceOf(Widget);
-    expect(classInstance.name).toEqual("Doodad");
-    expect(classInstance.color).toEqual("Blue");
-    expect(classInstance.model).toEqual(1234);
+    t.type(classInstance, Widget);
+    t.equal(classInstance.name, "Doodad");
+    t.equal(classInstance.color, "Blue");
+    t.equal(classInstance.model, 1234);
 
-    expect(classInstance.detail[0]).toBeInstanceOf(WidgetDetail);
-    expect(classInstance.detail[0].material).toBeUndefined();
-    expect(classInstance.detail[0].shape).toEqual("Square");
+    t.type(classInstance.detail[0], WidgetDetail);
+    t.equal(classInstance.detail[0].material, undefined);
+    t.equal(classInstance.detail[0].shape, "Square");
 
-    expect(classInstance.detail[1]).toBeInstanceOf(WidgetDetail);
-    expect(classInstance.detail[1].material).toBeUndefined();
-    expect(classInstance.detail[1].shape).toEqual("Circle");
+    t.type(classInstance.detail[1], WidgetDetail);
+    t.equal(classInstance.detail[1].material, undefined);
+    t.equal(classInstance.detail[1].shape, "Circle");
+    t.end();
 });
 
-test("exclude abstract complex arrays", () => {
+void test("exclude abstract complex arrays", t => {
     abstract class PeardropDto {
         @Exclude()
         id: string;
@@ -227,34 +228,34 @@ test("exclude abstract complex arrays", () => {
 
     const classArray = MetaTransformer.toClass<VpnServerDto>(VpnServerDto, plainServerArray);
 
-    expect.assertions(26);
-    expect(classArray[0]).toBeInstanceOf(VpnServerDto);
-    expect(classArray[0].id).toBeUndefined();
-    expect(classArray[0].created).toBeUndefined();
-    expect(classArray[0].updated).toBeUndefined();
-    expect(classArray[0].name).toEqual("lu001");
-    expect(classArray[0].ipAddress).toEqual("104.244.77.222");
-    expect(classArray[0].port).toEqual("51820");
+    t.type(classArray[0], VpnServerDto);
+    t.equal(classArray[0].id, undefined);
+    t.equal(classArray[0].created, undefined);
+    t.equal(classArray[0].updated, undefined);
+    t.equal(classArray[0].name, "lu001");
+    t.equal(classArray[0].ipAddress, "104.244.77.222");
+    t.equal(classArray[0].port, "51820");
 
-    expect(classArray[0].country).toBeInstanceOf(CountryDto);
-    expect(classArray[0].country.id).toBeUndefined();
-    expect(classArray[0].country.created).toBeUndefined();
-    expect(classArray[0].country.updated).toBeUndefined();
-    expect(classArray[0].country.code).toEqual("LU");
-    expect(classArray[0].country.name).toEqual("Luxembourg");
+    t.type(classArray[0].country, CountryDto);
+    t.equal(classArray[0].country.id, undefined);
+    t.equal(classArray[0].country.created, undefined);
+    t.equal(classArray[0].country.updated, undefined);
+    t.equal(classArray[0].country.code, "LU");
+    t.equal(classArray[0].country.name, "Luxembourg");
 
-    expect(classArray[1]).toBeInstanceOf(VpnServerDto);
-    expect(classArray[1].id).toBeUndefined();
-    expect(classArray[1].created).toBeUndefined();
-    expect(classArray[1].updated).toBeUndefined();
-    expect(classArray[1].name).toEqual("us001");
-    expect(classArray[1].ipAddress).toEqual("209.141.58.182");
-    expect(classArray[1].port).toEqual("51820");
+    t.type(classArray[1], VpnServerDto);
+    t.equal(classArray[1].id, undefined);
+    t.equal(classArray[1].created, undefined);
+    t.equal(classArray[1].updated, undefined);
+    t.equal(classArray[1].name, "us001");
+    t.equal(classArray[1].ipAddress, "209.141.58.182");
+    t.equal(classArray[1].port, "51820");
 
-    expect(classArray[1].country).toBeInstanceOf(CountryDto);
-    expect(classArray[1].country.id).toBeUndefined();
-    expect(classArray[1].country.created).toBeUndefined();
-    expect(classArray[1].country.updated).toBeUndefined();
-    expect(classArray[1].country.code).toEqual("US");
-    expect(classArray[1].country.name).toEqual("United States");
+    t.type(classArray[1].country, CountryDto);
+    t.equal(classArray[1].country.id, undefined);
+    t.equal(classArray[1].country.created, undefined);
+    t.equal(classArray[1].country.updated, undefined);
+    t.equal(classArray[1].country.code, "US");
+    t.equal(classArray[1].country.name, "United States");
+    t.end();
 });

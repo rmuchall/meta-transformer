@@ -1,5 +1,5 @@
-import {ClassType} from "./ClassType";
-import {DecoratorType} from "../enums/DecoratorType";
+import {ClassType} from "./ClassType.js";
+import {DecoratorType} from "../enums/DecoratorType.js";
 
 export interface TransformContext {
     // Metadata

@@ -1,10 +1,11 @@
-import {Transform} from "../src/decorators/property/Transform";
-import {MetaTransformer} from "../src/MetaTransformer";
-import {Exclude} from "../src/decorators/property/Exclude";
+import {test, beforeEach} from "tap";
+import {Transform} from "../src/decorators/property/Transform.js";
+import {MetaTransformer} from "../src/MetaTransformer.js";
+import {Exclude} from "../src/decorators/property/Exclude.js";
 
 beforeEach(MetaTransformer.clearMetadata);
 
-test("circular dependencies", () => {
+void test("circular dependencies", t => {
     class WidgetDetail {
         material: string;
         shape: string;
@@ -33,16 +34,12 @@ test("circular dependencies", () => {
     });
     widget.detail = widgetDetail;
     widget.detail.circular = widgetDetail;
-
-    expect.assertions(1);
-    expect(() => {
-        MetaTransformer.toClass<Widget>(Widget, widget);
-    }).toThrow();
+    t.throws(t => MetaTransformer.toClass<Widget>(Widget, widget));
+    t.end();
 });
 
-test("multiple transform contexts", () => {
-    expect.assertions(1);
-    expect(() => {
+void test("multiple transform contexts", t => {
+    t.throws(() => {
         class WidgetDetail {
             material: string;
             shape: string;
@@ -59,5 +56,6 @@ test("multiple transform contexts", () => {
         }
 
         new Widget();
-    }).toThrow("Conflicting transform contexts");
+    }, new Error("Conflicting transform contexts"));
+    t.end();
 });

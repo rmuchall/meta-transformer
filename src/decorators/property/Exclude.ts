@@ -1,5 +1,5 @@
-import {MetaTransformer} from "../../MetaTransformer";
-import {DecoratorType} from "../../enums/DecoratorType";
+import {MetaTransformer} from "../../MetaTransformer.js";
+import {DecoratorType} from "../../enums/DecoratorType.js";
 
 export function Exclude(): PropertyDecorator {
     return (target, propertyKey) => {

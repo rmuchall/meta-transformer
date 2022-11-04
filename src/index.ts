@@ -1,12 +1,12 @@
 // core
-export * from "./MetaTransformer";
+export * from "./MetaTransformer.js";
 // decorators
-export * from "./decorators/property/Exclude";
-export * from "./decorators/property/Transform";
+export * from "./decorators/property/Exclude.js";
+export * from "./decorators/property/Transform.js";
 // enums
-export * from "./enums/DecoratorType";
+export * from "./enums/DecoratorType.js";
 // interfaces
-export * from "./interfaces/ClassType";
-export * from "./interfaces/Metadata";
-export * from "./interfaces/TransformContext";
-export * from "./interfaces/TransformOptions";
+export * from "./interfaces/ClassType.js";
+export * from "./interfaces/Metadata.js";
+export * from "./interfaces/TransformContext.js";
+export * from "./interfaces/TransformOptions.js";

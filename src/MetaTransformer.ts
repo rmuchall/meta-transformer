@@ -1,7 +1,7 @@
-import {TransformContext} from "./interfaces/TransformContext";
-import {Metadata} from "./interfaces/Metadata";
-import {ClassType} from "./interfaces/ClassType";
-import {DecoratorType} from "./enums/DecoratorType";
+import {TransformContext} from "./interfaces/TransformContext.js";
+import {Metadata} from "./interfaces/Metadata.js";
+import {ClassType} from "./interfaces/ClassType.js";
+import {DecoratorType} from "./enums/DecoratorType.js";
 
 export abstract class MetaTransformer {
     private static metadata: Record<string, Metadata> = {};

@@ -1,9 +1,10 @@
-import {MetaTransformer} from "../src/MetaTransformer";
-import {Transform} from "../src/decorators/property/Transform";
+import {test, beforeEach} from "tap";
+import {MetaTransformer} from "../src/MetaTransformer.js";
+import {Transform} from "../src/decorators/property/Transform.js";
 
 beforeEach(MetaTransformer.clearMetadata);
 
-test("primitive types", () => {
+void test("primitive types", t => {
     class Widget {
         name: string;
         model: number;
@@ -16,15 +17,15 @@ test("primitive types", () => {
         created: new Date()
     });
 
-    expect.assertions(5);
-    expect(classInstance.name).toEqual("Doodad");
-    expect(classInstance.model).toEqual(1234);
-    expect(classInstance.created).toBeInstanceOf(Date);
-    expect(isNaN(classInstance.created.valueOf())).toBeFalsy();
-    expect(classInstance).toBeInstanceOf(Widget);
+    t.type(classInstance, Widget);
+    t.equal(classInstance.name, "Doodad");
+    t.equal(classInstance.model, 1234);
+    t.type(classInstance.created, Date);
+    t.notOk(isNaN(classInstance.created.valueOf()));
+    t.end();
 });
 
-test("arrays", () => {
+void test("arrays", t => {
     class Widget {
         name: string;
         color: string;
@@ -45,19 +46,19 @@ test("arrays", () => {
         ]
     );
 
-    expect.assertions(8);
-    expect(classArray[0]).toBeInstanceOf(Widget);
-    expect(classArray[0].name).toEqual("Doodad");
-    expect(classArray[0].color).toEqual("Blue");
-    expect(classArray[0].model).toEqual(1234);
+    t.type(classArray[0], Widget);
+    t.equal(classArray[0].name, "Doodad");
+    t.equal(classArray[0].color, "Blue");
+    t.equal(classArray[0].model, 1234);
 
-    expect(classArray[1]).toBeInstanceOf(Widget);
-    expect(classArray[1].name).toEqual("Thing");
-    expect(classArray[1].color).toEqual("Red");
-    expect(classArray[1].model).toEqual(9876);
+    t.type(classArray[1], Widget);
+    t.equal(classArray[1].name, "Thing");
+    t.equal(classArray[1].color, "Red");
+    t.equal(classArray[1].model, 9876);
+    t.end();
 });
 
-test("nested complex types", () => {
+void test("nested complex types", t => {
     class WidgetDetail {
         material: string;
         shape: string;
@@ -96,22 +97,22 @@ test("nested complex types", () => {
         nullDetail: null
     });
 
-    expect.assertions(12);
-    expect(classInstance).toBeInstanceOf(Widget);
-    expect(classInstance.name).toEqual("Doodad");
-    expect(classInstance.color).toEqual("Blue");
-    expect(classInstance.model).toEqual(1234);
-    expect(classInstance.detail).toBeInstanceOf(WidgetDetail);
-    expect(classInstance.detail.material).toEqual("Plastic");
-    expect(classInstance.detail.shape).toEqual("Square");
-    expect(classInstance.nullDetailWithValue).toBeInstanceOf(WidgetDetail);
-    expect(classInstance.nullDetailWithValue!.material).toEqual("Plastic");
-    expect(classInstance.nullDetailWithValue!.shape).toEqual("Square");
-    expect(classInstance.nullDetail).toBeNull();
-    expect(classInstance.undefinedDetail).toBeUndefined();
+    t.type(classInstance, Widget);
+    t.equal(classInstance.name, "Doodad");
+    t.equal(classInstance.color, "Blue");
+    t.equal(classInstance.model, 1234);
+    t.type(classInstance.detail, WidgetDetail);
+    t.equal(classInstance.detail.material, "Plastic");
+    t.equal(classInstance.detail.shape, "Square");
+    t.type(classInstance.nullDetailWithValue, WidgetDetail);
+    t.equal(classInstance.nullDetailWithValue!.material, "Plastic");
+    t.equal(classInstance.nullDetailWithValue!.shape, "Square");
+    t.equal(classInstance.nullDetail, null);
+    t.equal(classInstance.undefinedDetail, undefined);
+    t.end();
 });
 
-test("nested arrays", () => {
+void test("nested arrays", t => {
     class WidgetDetail {
         material: string;
         shape: string;
@@ -142,22 +143,22 @@ test("nested arrays", () => {
         ]
     });
 
-    expect.assertions(10);
-    expect(classInstance).toBeInstanceOf(Widget);
-    expect(classInstance.name).toEqual("Doodad");
-    expect(classInstance.color).toEqual("Blue");
-    expect(classInstance.model).toEqual(1234);
+    t.type(classInstance, Widget);
+    t.equal(classInstance.name, "Doodad");
+    t.equal(classInstance.color, "Blue");
+    t.equal(classInstance.model, 1234);
 
-    expect(classInstance.detail[0]).toBeInstanceOf(WidgetDetail);
-    expect(classInstance.detail[0].material).toEqual("Plastic");
-    expect(classInstance.detail[0].shape).toEqual("Square");
+    t.type(classInstance.detail[0], WidgetDetail);
+    t.equal(classInstance.detail[0].material, "Plastic");
+    t.equal(classInstance.detail[0].shape, "Square");
 
-    expect(classInstance.detail[1]).toBeInstanceOf(WidgetDetail);
-    expect(classInstance.detail[1].material).toEqual("Metal");
-    expect(classInstance.detail[1].shape).toEqual("Circle");
+    t.type(classInstance.detail[1], WidgetDetail);
+    t.equal(classInstance.detail[1].material, "Metal");
+    t.equal(classInstance.detail[1].shape, "Circle");
+    t.end();
 });
 
-test("allow extraneous properties", () => {
+void test("allow extraneous properties", t => {
     class Widget {
         name: string;
         color: string;
@@ -171,6 +172,6 @@ test("allow extraneous properties", () => {
         extraneous: "allowed"
     });
 
-    expect.assertions(1);
-    expect((classInstance as any).extraneous).toEqual("allowed");
+    t.equal((classInstance as any).extraneous, "allowed");
+    t.end();
 });

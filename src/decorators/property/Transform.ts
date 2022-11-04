@@ -1,7 +1,7 @@
-import {MetaTransformer} from "../../MetaTransformer";
-import {ClassType} from "../../interfaces/ClassType";
-import {DecoratorType} from "../../enums/DecoratorType";
-import {TransformOptions} from "../../interfaces/TransformOptions";
+import {MetaTransformer} from "../../MetaTransformer.js";
+import {ClassType} from "../../interfaces/ClassType.js";
+import {DecoratorType} from "../../enums/DecoratorType.js";
+import {TransformOptions} from "../../interfaces/TransformOptions.js";
 
 export function Transform(transformType: ClassType, transformOptions: TransformOptions = {}): PropertyDecorator {
     return (target, propertyKey) => {
